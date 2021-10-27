@@ -54,7 +54,7 @@ import org.apache.sling.resourceaccesssecurity.ResourceAccessGate;
     @Property(name=ResourceAccessGateFactory.PROP_JCR_PATH,
               label="JCR Node",
               description="This node is checked for permissions to the resources."),
-    @Property(name=ResourceAccessGate.OPERATIONS, value= {"read", "create", "update", "delete"}, propertyPrivate=true),
+    @Property(name=ResourceAccessGate.OPERATIONS, value= {"read", "create", "update", "delete", "reorder-children"}, propertyPrivate=true),
     @Property(name=ResourceAccessGate.CONTEXT, value=ResourceAccessGate.PROVIDER_CONTEXT, propertyPrivate=true)
 })
 public class ResourceAccessGateFactory
@@ -117,6 +117,14 @@ public class ResourceAccessGateFactory
     }
 
     /**
+     * @see org.apache.sling.resourceaccesssecurity.AllowingResourceAccessGate#hasReorderChildrenRestrictions(org.apache.sling.api.resource.ResourceResolver)
+     */
+    @Override
+    public boolean hasReorderChildrenRestrictions(ResourceResolver resourceResolver) {
+        return true;
+    }
+
+    /**
      * @see org.apache.sling.resourceaccesssecurity.AllowingResourceAccessGate#hasUpdateRestrictions(org.apache.sling.api.resource.ResourceResolver)
      */
     @Override
@@ -132,6 +140,7 @@ public class ResourceAccessGateFactory
         return true;
     }
 
+    
     /**
      * @see org.apache.sling.resourceaccesssecurity.AllowingResourceAccessGate#canRead(org.apache.sling.api.resource.Resource)
      */
@@ -162,5 +171,13 @@ public class ResourceAccessGateFactory
     @Override
     public GateResult canCreate(String absPathName, ResourceResolver resourceResolver) {
         return this.checkPermission(resourceResolver, absPathName, Session.ACTION_ADD_NODE);
+    }
+
+    /**
+     * @see org.apache.sling.resourceaccesssecurity.AllowingResourceAccessGate#canReorderChildren(Resource)
+     */
+    @Override
+    public GateResult canReorderChildren(Resource resource) {
+        return this.checkPermission(resource.getResourceResolver(), resource.getPath(), Session.ACTION_SET_PROPERTY);
     }
 }
