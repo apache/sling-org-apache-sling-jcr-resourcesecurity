@@ -6,4 +6,4 @@
 
 This module is part of the [Apache Sling](https://sling.apache.org) project.
 
-This bundle provides a [resource access gate](https://github.com/apache/sling-org-apache-sling-resourceaccesssecurity) to protect resources based on JCR nodes. The documentation is maintained at [https://sling.apache.org/documentation/bundles/resource-access-security.html](https://sling.apache.org/documentation/bundles/resource-access-security.html)
+This bundle provides a [resource access gate](https://github.com/apache/sling-org-apache-sling-resourceaccesssecurity) to protect resources based on JCR nodes. The documentation is maintained at [Resource Access Security](https://sling.apache.org/documentation/bundles/resource-access-security.html).
