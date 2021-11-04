@@ -54,7 +54,7 @@ import org.apache.sling.resourceaccesssecurity.ResourceAccessGate;
     @Property(name=ResourceAccessGateFactory.PROP_JCR_PATH,
               label="JCR Node",
               description="This node is checked for permissions to the resources."),
-    @Property(name=ResourceAccessGate.OPERATIONS, value= {"read", "create", "update", "delete", "reorder-children"}, propertyPrivate=true),
+    @Property(name=ResourceAccessGate.OPERATIONS, value= {"read", "create", "update", "delete", "order-children"}, propertyPrivate=true),
     @Property(name=ResourceAccessGate.CONTEXT, value=ResourceAccessGate.PROVIDER_CONTEXT, propertyPrivate=true)
 })
 public class ResourceAccessGateFactory
@@ -120,7 +120,7 @@ public class ResourceAccessGateFactory
      * @see org.apache.sling.resourceaccesssecurity.AllowingResourceAccessGate#hasReorderChildrenRestrictions(org.apache.sling.api.resource.ResourceResolver)
      */
     @Override
-    public boolean hasReorderChildrenRestrictions(ResourceResolver resourceResolver) {
+    public boolean hasOrderChildrenRestrictions(ResourceResolver resourceResolver) {
         return true;
     }
 
@@ -174,10 +174,10 @@ public class ResourceAccessGateFactory
     }
 
     /**
-     * @see org.apache.sling.resourceaccesssecurity.AllowingResourceAccessGate#canReorderChildren(Resource)
+     * @see org.apache.sling.resourceaccesssecurity.AllowingResourceAccessGate#canOrderChildren(Resource)
      */
     @Override
-    public GateResult canReorderChildren(Resource resource) {
+    public GateResult canOrderChildren(Resource resource) {
         return this.checkPermission(resource.getResourceResolver(), resource.getPath(), Session.ACTION_SET_PROPERTY);
     }
 }
