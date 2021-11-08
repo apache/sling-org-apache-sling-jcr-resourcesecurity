@@ -18,45 +18,31 @@
  */
 package org.apache.sling.jcr.resourcesecurity.impl;
 
-import java.util.Map;
-
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.resourceaccesssecurity.AllowingResourceAccessGate;
 import org.apache.sling.resourceaccesssecurity.ResourceAccessGate;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Component(configurationFactory=true, policy=ConfigurationPolicy.REQUIRE, metatype=true,
-           label="Apache Sling JCR Resource Access Gate",
-           description="This access gate can be used to handle the access to resources" +
-                       " not backed by a JCR repository by providing ACLs in the " +
-                       "reposiory")
-@Service(value=ResourceAccessGate.class)
-@Properties({
-    @Property(name=ResourceAccessGate.PATH, label="Path",
-              description="The path is a regular expression for which resources the service should be called"),
-    @Property(name=ResourceAccessGateFactory.PROP_PREFIX,
-              label="Deep Check Prefix",
-              description="If this value is configured with a prefix and the resource path starts with this" +
-                          " prefix, the prefix is removed from the path and the remaining part is appended " +
-                          " to the JCR path to check. For example if /foo/a/b/c is required, this prefix is " +
-                          " configured with /foo and the JCR node to check is /check, the permissions at " +
-                          " /check/a/b/c are checked."),
-    @Property(name=ResourceAccessGateFactory.PROP_JCR_PATH,
-              label="JCR Node",
-              description="This node is checked for permissions to the resources."),
-    @Property(name=ResourceAccessGate.OPERATIONS, value= {"read", "create", "update", "delete", "order-children"}, propertyPrivate=true),
-    @Property(name=ResourceAccessGate.CONTEXT, value=ResourceAccessGate.PROVIDER_CONTEXT, propertyPrivate=true)
+@Component(configurationPolicy=ConfigurationPolicy.REQUIRE, service = ResourceAccessGate.class, property = {
+        ResourceAccessGate.OPERATIONS+"=read",
+        ResourceAccessGate.OPERATIONS+"=create",
+        ResourceAccessGate.OPERATIONS+"=update",
+        ResourceAccessGate.OPERATIONS+"=delete",
+        ResourceAccessGate.OPERATIONS+"=order-children",
+        ResourceAccessGate.CONTEXT+"="+ResourceAccessGate.PROVIDER_CONTEXT
 })
+@Designate(factory = true, ocd = ResourceAccessGateFactory.Configuration.class)
 public class ResourceAccessGateFactory
     extends AllowingResourceAccessGate
     implements ResourceAccessGate {
@@ -68,11 +54,32 @@ public class ResourceAccessGateFactory
     private String jcrPath;
 
     private String prefix;
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceAccessGateFactory.class);
+
+    @ObjectClassDefinition(
+            name = "Apache Sling JCR Resource Access Gate",
+            description = "This access gate can be used to handle the access to resources" +
+                       " not backed by a JCR repository by leveraging ACLs in the " +
+                       "JCR repository")
+    public static @interface Configuration {
+        @AttributeDefinition(name = "Path", description = "The path is a regular expression which must match the affected resource path for this service to be called.")
+        String path() default ".*";
+        @AttributeDefinition(name = "Deep Check Prefix", 
+                description="If this value is configured and the resource path starts with this" +
+                " prefix, the prefix is removed from the path and the remaining part is appended " +
+                " to the JCR path to check. For example if /foo/a/b/c is required, this prefix is " +
+                " configured with /foo and the JCR node to check is /check, the permissions at " +
+                " /check/a/b/c are checked.")
+        String checkpath_prefix();
+        @AttributeDefinition(name = "JCR Node Path", description = "The node given through this path is consulted for granting/denying permissions to the resources. If 'Deep Check Prefix' is used, then this only specifies the node's path prefix.")
+        String jcrPath();
+    }
 
     @Activate
-    protected void activate(final Map<String, Object> props) {
-        this.jcrPath = PropertiesUtil.toString(props.get(PROP_JCR_PATH), null);
-        this.prefix = PropertiesUtil.toString(props.get(PROP_PREFIX), null);
+    protected void activate(Configuration configuration) {
+        this.jcrPath = configuration.jcrPath();
+        this.prefix = configuration.checkpath_prefix();
         if ( this.prefix != null && !this.prefix.endsWith("/") ) {
              this.prefix = this.prefix + "/";
         }
@@ -95,6 +102,7 @@ public class ResourceAccessGateFactory
                 granted = session.hasPermission(checkPath, permission);
             } catch (final RepositoryException re) {
                 // ignore
+                LOGGER.debug("Could not retrieve permission {} for path {}", checkPath, permission, re);
             }
         }
         return granted ? GateResult.GRANTED : GateResult.DENIED;

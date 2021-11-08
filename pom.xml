@@ -21,14 +21,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.sling</groupId>
-        <artifactId>sling</artifactId>
-        <version>26</version>
+        <artifactId>sling-bundle-parent</artifactId>
+        <version>46</version>
         <relativePath/>
     </parent>
 
     <artifactId>org.apache.sling.jcr.resourcesecurity</artifactId>
     <version>1.0.3-SNAPSHOT</version>
-    <packaging>bundle</packaging>
 
     <name>Apache Sling JCR Resource Security</name>
     <description>
@@ -41,44 +40,20 @@
         <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-jcr-resourcesecurity.git</url>
     </scm>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <excludePackageNames>
-                        org.apache.sling.jcr.resourcesecurity.impl
-                    </excludePackageNames>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
+    <properties>
+        <site.javadoc.exclude>org.apache.sling.jcr.resourcesecurity.impl</site.javadoc.exclude>
+        <project.build.outputTimestamp>1</project.build.outputTimestamp>
+        <sling.java.version>8</sling.java.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>org.osgi.service.metatype.annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -87,7 +62,6 @@
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
-            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
@@ -99,12 +73,6 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.resourceaccesssecurity</artifactId>
             <version>1.0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.commons.osgi</artifactId>
-            <version>2.2.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
