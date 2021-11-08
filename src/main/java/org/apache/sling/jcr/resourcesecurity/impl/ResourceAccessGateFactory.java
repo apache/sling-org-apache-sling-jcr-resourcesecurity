@@ -60,19 +60,19 @@ public class ResourceAccessGateFactory
     @ObjectClassDefinition(
             name = "Apache Sling JCR Resource Access Gate",
             description = "This access gate can be used to handle the access to resources" +
-                       " not backed by a JCR repository by providing ACLs in the " +
-                       "reposiory")
+                       " not backed by a JCR repository by leveraging ACLs in the " +
+                       "JCR repository")
     public static @interface Configuration {
-        @AttributeDefinition(name = "Path", description = "The path is a regular expression for which resources the service should be called.")
-        String path();
+        @AttributeDefinition(name = "Path", description = "The path is a regular expression which must match the affected resource path for this service to be called.")
+        String path() default ".*";
         @AttributeDefinition(name = "Deep Check Prefix", 
-                description="If this value is configured with a prefix and the resource path starts with this" +
+                description="If this value is configured and the resource path starts with this" +
                 " prefix, the prefix is removed from the path and the remaining part is appended " +
                 " to the JCR path to check. For example if /foo/a/b/c is required, this prefix is " +
                 " configured with /foo and the JCR node to check is /check, the permissions at " +
                 " /check/a/b/c are checked.")
         String checkpath_prefix();
-        @AttributeDefinition(name = "JCR Node Path", description = "This node is checked for permissions to the resources.")
+        @AttributeDefinition(name = "JCR Node Path", description = "The node given through this path is consulted for granting/denying permissions to the resources. If 'Deep Check Prefix' is used, then this only specifies the node's path prefix.")
         String jcrPath();
     }
 
