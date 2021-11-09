@@ -23,11 +23,11 @@
         <groupId>org.apache.sling</groupId>
         <artifactId>sling-bundle-parent</artifactId>
         <version>46</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <artifactId>org.apache.sling.jcr.resourcesecurity</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>Apache Sling JCR Resource Security</name>
     <description>
@@ -38,7 +38,8 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-jcr-resourcesecurity.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-jcr-resourcesecurity.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-jcr-resourcesecurity.git</url>
-    </scm>
+      <tag>org.apache.sling.jcr.resourcesecurity-1.1.0</tag>
+  </scm>
 
     <properties>
         <site.javadoc.exclude>org.apache.sling.jcr.resourcesecurity.impl</site.javadoc.exclude>
